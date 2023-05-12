@@ -20,7 +20,7 @@ class MNNAdapter(object):
         tmp_input = MNN.Tensor(self.input_shape, MNN.Halide_Type_Float, tensor, self.dim_type)
         self.input_tensor.copyFrom(tmp_input)
         self.interpreter.runSession(self.session)
-        output_tensor = list()
+        output_tensor = []
         if self.outputs_name:
             if self.outputs_shape:
                 for idx, shape in enumerate(self.outputs_shape):
@@ -32,6 +32,4 @@ class MNNAdapter(object):
                 output_tensor = [np.asarray(self.interpreter.getSessionOutput(self.session, name).getData()) for name in self.outputs_name]
         else:
             output_tensor.append(self.interpreter.getSessionOutput(self.session).getData())
-        res = np.asarray(output_tensor)
-
-        return res
+        return np.asarray(output_tensor)

@@ -19,10 +19,7 @@ def is_http_url(s):
         r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
-    if regex.match(s):
-        return True
-    else:
-        return False
+    return bool(regex.match(s))
 
 
 def url_to_image(url):
@@ -41,10 +38,8 @@ def get_image(path: str):
     if is_http_url(path):
         # url
         image = url_to_image(path)
-    else:
-        # local path
-        if path.split('.')[-1].lower() in ('jpg', 'png', 'jpeg', 'bmp',):
-            image = cv2.imread(path)
+    elif path.split('.')[-1].lower() in ('jpg', 'png', 'jpeg', 'bmp',):
+        image = cv2.imread(path)
     try:
         h, w, c = image.shape
     except Exception as err:
@@ -60,10 +55,7 @@ def get_image(path: str):
 def sample(src, det):
     ret, image = get_image(src)
     if ret:
-        if det == 'low':
-            level = lpr3.DETECT_LEVEL_LOW
-        else:
-            level = lpr3.DETECT_LEVEL_HIGH
+        level = lpr3.DETECT_LEVEL_LOW if det == 'low' else lpr3.DETECT_LEVEL_HIGH
         catcher = lpr3.LicensePlateCatcher(detect_level=level)
         print("--" * 20)
         result = catcher(image)

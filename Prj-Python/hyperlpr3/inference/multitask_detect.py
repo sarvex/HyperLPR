@@ -101,9 +101,10 @@ class MultiTaskDetectorMNN(HamburgerABC):
 
     def _run_session(self, data):
         outputs = self.session.inference(data)
-        result = list()
-        for idx, output in enumerate(outputs):
-            result.append(output.reshape(self.tensor_shape[idx]))
+        result = [
+            output.reshape(self.tensor_shape[idx])
+            for idx, output in enumerate(outputs)
+        ]
         result = np.asarray(result)
 
         return result[0]
@@ -132,9 +133,7 @@ class MultiTaskDetectorDNN(HamburgerABC):
 
     def _run_session(self, data):
         self.session.setInput(data)
-        outputs = self.session.forward()
-
-        return outputs
+        return self.session.forward()
 
     def _postprocess(self, data):
 
@@ -169,9 +168,9 @@ class MultiTaskDetectorORT(HamburgerABC):
         self.input_name = input_option.name
 
     def _run_session(self, data):
-        result = self.session.run([self.outputs_option[0].name], {self.input_name: data})[0]
-
-        return result
+        return self.session.run(
+            [self.outputs_option[0].name], {self.input_name: data}
+        )[0]
 
     def _postprocess(self, data):
         r, left, top = self.tmp_pack

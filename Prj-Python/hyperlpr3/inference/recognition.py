@@ -19,10 +19,7 @@ def encode_images(image: np.ndarray, max_wh_ratio, target_shape, limited_max_wid
     ratio = w / float(h)
     ratio_imgH = math.ceil(imgH * ratio)
     ratio_imgH = max(ratio_imgH, limited_min_width)
-    if ratio_imgH > imgW:
-        resized_w = imgW
-    else:
-        resized_w = int(ratio_imgH)
+    resized_w = imgW if ratio_imgH > imgW else int(ratio_imgH)
     resized_image = cv2.resize(image, (resized_w, imgH))
     # print((resized_w, imgH))
     # padding_im1 = np.ones((imgH, imgW, imgC), dtype=np.uint8) * 128
@@ -65,10 +62,13 @@ class PPRCNNRecognitionMNN(HamburgerABC):
             for idx in range(len(text_index[batch_idx])):
                 if text_index[batch_idx][idx] in ignored_tokens:
                     continue
-                if is_remove_duplicate:
-                    # only for predict
-                    if idx > 0 and text_index[batch_idx][idx - 1] == text_index[batch_idx][idx]:
-                        continue
+                if (
+                    is_remove_duplicate
+                    and idx > 0
+                    and text_index[batch_idx][idx - 1]
+                    == text_index[batch_idx][idx]
+                ):
+                    continue
                 char_list.append(self.character_list[int(text_index[batch_idx][idx])])
                 if text_prob is not None:
                     conf_list.append(text_prob[batch_idx][idx])
@@ -130,10 +130,13 @@ class PPRCNNRecognitionORT(HamburgerABC):
             for idx in range(len(text_index[batch_idx])):
                 if text_index[batch_idx][idx] in ignored_tokens:
                     continue
-                if is_remove_duplicate:
-                    # only for predict
-                    if idx > 0 and text_index[batch_idx][idx - 1] == text_index[batch_idx][idx]:
-                        continue
+                if (
+                    is_remove_duplicate
+                    and idx > 0
+                    and text_index[batch_idx][idx - 1]
+                    == text_index[batch_idx][idx]
+                ):
+                    continue
                 # print(int(text_index[batch_idx][idx]))
                 char_list.append(self.character_list[int(text_index[batch_idx][idx])])
                 if text_prob is not None:
@@ -146,9 +149,9 @@ class PPRCNNRecognitionORT(HamburgerABC):
 
     # @cost("Recognition")
     def _run_session(self, data) -> np.ndarray:
-        result = self.session.run([self.output_config.name], {self.input_config.name: data})
-
-        return result
+        return self.session.run(
+            [self.output_config.name], {self.input_config.name: data}
+        )
 
     def _postprocess(self, data) -> tuple:
         if data:
@@ -192,10 +195,13 @@ class PPRCNNRecognitionDNN(HamburgerABC):
             for idx in range(len(text_index[batch_idx])):
                 if text_index[batch_idx][idx] in ignored_tokens:
                     continue
-                if is_remove_duplicate:
-                    # only for predict
-                    if idx > 0 and text_index[batch_idx][idx - 1] == text_index[batch_idx][idx]:
-                        continue
+                if (
+                    is_remove_duplicate
+                    and idx > 0
+                    and text_index[batch_idx][idx - 1]
+                    == text_index[batch_idx][idx]
+                ):
+                    continue
                 char_list.append(self.character_list[int(text_index[batch_idx][idx])])
                 if text_prob is not None:
                     conf_list.append(text_prob[batch_idx][idx])

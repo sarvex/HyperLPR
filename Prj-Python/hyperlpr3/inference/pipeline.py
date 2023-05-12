@@ -13,7 +13,7 @@ class LPRMultiTaskPipeline(object):
         self.full_result = full_result
 
     def run(self, image: np.ndarray) -> list:
-        result = list()
+        result = []
         assert len(image.shape) == 3, "Input image must be 3 channels."
         assert image is not None, "Input image cannot be empty."
         outputs = self.detector(image)
@@ -47,10 +47,7 @@ class LPRMultiTaskPipeline(object):
                     cls = self.classifier(pad)
                     idx = int(np.argmax(cls))
                     if idx == PLATE_TYPE_YELLOW:
-                        if layer_num == DOUBLE:
-                            plate_type = YELLOW_DOUBLE
-                        else:
-                            plate_type = YELLOW_SINGLE
+                        plate_type = YELLOW_DOUBLE if layer_num == DOUBLE else YELLOW_SINGLE
                     elif idx == PLATE_TYPE_BLUE:
                         plate_type = BLUE
                     elif idx == PLATE_TYPE_GREEN:
@@ -77,10 +74,10 @@ class LPRPipeline(object):
 
     # @cost("PipelineTotalCost")
     def run(self, image: np.ndarray) -> list:
-        result = list()
+        result = []
         boxes, classes, scores = self.detector(image)
         fp_boxes_index = find_the_adjacent_boxes(boxes)
-        image_blacks = list()
+        image_blacks = []
         if len(fp_boxes_index) > 0:
             for idx in fp_boxes_index:
                 image_black = np.zeros_like(image)
@@ -98,9 +95,7 @@ class LPRPipeline(object):
                 else:
                     warped, p, mat = align_box(image, box, scale_factor=1.2, size=96)
                 kps = self.vertex_predictor(warped)
-                polyline = list()
-                for point in kps:
-                    polyline.append([point[0], point[1], 1])
+                polyline = [[point[0], point[1], 1] for point in kps]
                 polyline = np.asarray(polyline)
                 inv = cv2.invertAffineTransform(mat)
                 trans_points = np.dot(inv, polyline.T).T

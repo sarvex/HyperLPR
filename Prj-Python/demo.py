@@ -15,9 +15,7 @@ def draw_plate_on_image(img, box, text, font):
     data = Image.fromarray(img)
     draw = ImageDraw.Draw(data)
     draw.text((x1 + 5, y1 - 20), text, (255, 255, 255), font=font)
-    res = np.asarray(data)
-
-    return res
+    return np.asarray(data)
 
 
 # 中文字体加载

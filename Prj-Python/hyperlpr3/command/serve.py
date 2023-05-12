@@ -32,11 +32,7 @@ class BaseResponse():
         """
         self.response['result'] = response_data
         self.response['code'] = 5005
-        if error_msg:
-            self.response['msg'] = error_msg
-        else:
-            self.response['msg'] = '权限校验失败，请重新检查权限'
-
+        self.response['msg'] = error_msg if error_msg else '权限校验失败，请重新检查权限'
         return JSONResponse(self.response)
 
     def http_request_parameter_error(self, response_data=None, error_msg=None):
@@ -45,21 +41,13 @@ class BaseResponse():
         """
         self.response['result'] = response_data
         self.response['code'] = 5007
-        if error_msg:
-            self.response['msg'] = error_msg
-        else:
-            self.response['msg'] = '提交参数异常，请重新检查接口参数'
-
+        self.response['msg'] = error_msg if error_msg else '提交参数异常，请重新检查接口参数'
         return JSONResponse(self.response)
 
     def http_server_error(self, response_data=None, error_msg=None):
         self.response['result'] = response_data
         self.response['code'] = 5009
-        if error_msg:
-            self.response['msg'] = error_msg
-        else:
-            self.response['msg'] = '服务异常'
-
+        self.response['msg'] = error_msg if error_msg else '服务异常'
         return JSONResponse(self.response)
 
 
@@ -106,7 +94,7 @@ async def vehicle_license_plate_recognition(file: List[UploadFile] = File(...)):
         nparr = np.fromstring(content, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR).astype(np.uint8)
         plates = catcher(img)
-        results = list()
+        results = []
         for code, conf, plate_type, box in plates:
             plate = dict(code=code, conf=float(conf), plate_type=type_list[plate_type], box=box)
             results.append(plate)

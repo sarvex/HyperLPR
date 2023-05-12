@@ -34,11 +34,10 @@ class Y5rkDetectorMNN(HamburgerABC):
 
     def _run_session(self, data):
         outputs = self.session.inference(data)
-        result = list()
-        for idx, output in enumerate(outputs):
-            result.append(output.reshape(self.tensor_shape[idx]))
-
-        return result
+        return [
+            output.reshape(self.tensor_shape[idx])
+            for idx, output in enumerate(outputs)
+        ]
 
     def _postprocess(self, data):
         ratio, (dw, dh) = self.temp_pack
@@ -48,8 +47,7 @@ class Y5rkDetectorMNN(HamburgerABC):
         input0_data = input0_data.reshape([3, -1] + list(input0_data.shape[-2:]))
         input1_data = input1_data.reshape([3, -1] + list(input1_data.shape[-2:]))
         input2_data = input2_data.reshape([3, -1] + list(input2_data.shape[-2:]))
-        input_data = list()
-        input_data.append(np.transpose(input0_data, (2, 3, 0, 1)))
+        input_data = [np.transpose(input0_data, (2, 3, 0, 1))]
         input_data.append(np.transpose(input1_data, (2, 3, 0, 1)))
         input_data.append(np.transpose(input2_data, (2, 3, 0, 1)))
 
@@ -168,9 +166,7 @@ class Y5rkDetectorORT(HamburgerABC):
 
     @cost("Detect")
     def _run_session(self, data):
-        outputs = self.session.run([], {"images": data})
-
-        return outputs
+        return self.session.run([], {"images": data})
 
     def _postprocess(self, data):
         ratio, (dw, dh) = self.temp_pack
@@ -180,8 +176,7 @@ class Y5rkDetectorORT(HamburgerABC):
         input0_data = input0_data.reshape([3, -1] + list(input0_data.shape[-2:]))
         input1_data = input1_data.reshape([3, -1] + list(input1_data.shape[-2:]))
         input2_data = input2_data.reshape([3, -1] + list(input2_data.shape[-2:]))
-        input_data = list()
-        input_data.append(np.transpose(input0_data, (2, 3, 0, 1)))
+        input_data = [np.transpose(input0_data, (2, 3, 0, 1))]
         input_data.append(np.transpose(input1_data, (2, 3, 0, 1)))
         input_data.append(np.transpose(input2_data, (2, 3, 0, 1)))
 

@@ -22,6 +22,4 @@ class HamburgerABC(metaclass=ABCMeta):
     def __call__(self, image):
         flow = self._preprocess(image)
         flow = self._run_session(flow)
-        result = self._postprocess(flow)
-
-        return result
+        return self._postprocess(flow)

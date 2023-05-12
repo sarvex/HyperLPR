@@ -37,13 +37,11 @@ class ClassificationORT(HamburgerABC):
     def _preprocess(self, image) -> np.ndarray:
         assert len(
             image.shape) == 3, "The dimensions of the input image object do not match. The input supports a single " \
-                               "image. "
+                                   "image. "
         # print(self.input_size)
         image_resize = cv2.resize(image, self.input_size)
         encode = encode_images(image_resize)
         encode = encode.astype(np.float32)
-        input_tensor = np.expand_dims(encode, 0)
-
-        return input_tensor
+        return np.expand_dims(encode, 0)
 
 

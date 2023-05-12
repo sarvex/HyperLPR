@@ -58,6 +58,6 @@ def initialization(re_download=False):
     models_dir = os.path.join(_DEFAULT_FOLDER_, _MODEL_VERSION_)
     # print(models_dir)
     if not os.path.exists(models_dir) or re_download:
-        target_url = os.path.join(_ONLINE_URL_, _MODEL_VERSION_) + '.zip'
+        target_url = f'{os.path.join(_ONLINE_URL_, _MODEL_VERSION_)}.zip'
         down_model_zip(target_url, _DEFAULT_FOLDER_, True)
 

@@ -5,7 +5,7 @@ from functools import wraps
 
 
 def find_the_adjacent_boxes(boxes: list):
-    list_index = list()
+    list_index = []
     for i, a in enumerate(boxes):
         for j, b in enumerate(boxes):
             if i == j:
@@ -16,9 +16,7 @@ def find_the_adjacent_boxes(boxes: list):
             bx, by, bw, bh = single_xyxy2cxcywh(b)
             dis = l2((ax, ay), (bx, by))
             if dis < 2 * aw or dis < 2 * bw:
-                list_index.append(i)
-                list_index.append(j)
-
+                list_index.extend((i, j))
     list_index = set(list_index)
 
     return list(list_index)
@@ -56,7 +54,7 @@ def xywh2xyxy(x):
 
 def process(input, mask, anchors, size):
     anchors = [anchors[i] for i in mask]
-    grid_h, grid_w = map(int, input.shape[0:2])
+    grid_h, grid_w = map(int, input.shape[:2])
 
     box_confidence = sigmoid(input[..., 4])
     box_confidence = np.expand_dims(box_confidence, axis=-1)
@@ -145,12 +143,11 @@ def nms_boxes(boxes, scores, nms_threshold):
         ovr = inter / (areas[i] + areas[order[1:]] - inter)
         inds = np.where(ovr <= nms_threshold)[0]
         order = order[inds + 1]
-    keep = np.array(keep)
-    return keep
+    return np.array(keep)
 
 
 def restore_bound_box(boxes: list, ratio: tuple, pad_size: tuple):
-    if len(boxes) > 0:
+    if boxes:
         pad_width, pad_height = pad_size
         boxes_array = np.asarray(boxes)
         # print(boxes_array)
@@ -208,7 +205,7 @@ def cost(tag=''):
                 try:
                     res = fn(*args, **kw)
                 except Exception as e:
-                    logger.error(f"@use_time %s(%s) execute error" % (fn.__name__, tag))
+                    logger.error(f"@use_time {fn.__name__}({tag}) execute error")
                     return None
                 else:
                     t2 = time.time()
@@ -293,7 +290,7 @@ def get_rotate_crop_image(img, points):
         M, (img_crop_width, img_crop_height),
         borderMode=cv2.BORDER_REPLICATE,
         flags=cv2.INTER_CUBIC)
-    dst_img_height, dst_img_width = dst_img.shape[0:2]
+    dst_img_height, dst_img_width = dst_img.shape[:2]
     if dst_img_height * 1.0 / dst_img_width >= 1.5:
         dst_img = np.rot90(dst_img)
 

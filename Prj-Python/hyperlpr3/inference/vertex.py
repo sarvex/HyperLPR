@@ -24,8 +24,7 @@ class BVTVertexMNN(HamburgerABC):
         self.session = MNNAdapter(mnn_path, self.input_shape)
 
     def _run_session(self, data):
-        outputs = self.session.inference(data)
-        return outputs
+        return self.session.inference(data)
 
     def _postprocess(self, data):
         assert data.shape[0] == 1
@@ -38,13 +37,11 @@ class BVTVertexMNN(HamburgerABC):
     def _preprocess(self, image):
         assert len(
             image.shape) == 3, "The dimensions of the input image object do not match. The input supports a single " \
-                               "image. "
+                                   "image. "
         image_resize = cv2.resize(image, self.input_size)
         encode = encode_images(image_resize)
         encode = encode.astype(np.float32)
-        input_tensor = np.expand_dims(encode, 0)
-
-        return input_tensor
+        return np.expand_dims(encode, 0)
 
 
 class BVTVertexORT(HamburgerABC):
@@ -74,10 +71,8 @@ class BVTVertexORT(HamburgerABC):
     def _preprocess(self, image) -> np.ndarray:
         assert len(
             image.shape) == 3, "The dimensions of the input image object do not match. The input supports a single " \
-                               "image. "
+                                   "image. "
         image_resize = cv2.resize(image, self.input_size)
         encode = encode_images(image_resize)
         encode = encode.astype(np.float32)
-        input_tensor = np.expand_dims(encode, 0)
-
-        return input_tensor
+        return np.expand_dims(encode, 0)
