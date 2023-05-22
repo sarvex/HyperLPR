@@ -10,7 +10,7 @@ humanfriendly==10.0
 idna==3.4
 importlib-metadata==6.0.0
 loguru==0.6.0
-mpmath==1.2.1
+mpmath==1.3.0
 numpy==1.21.6
 onnxruntime==1.14.0
 opencv-python==4.7.0.68
