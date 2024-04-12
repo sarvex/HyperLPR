@@ -7,7 +7,7 @@ fastapi==0.92.0
 flatbuffers==23.1.21
 h11==0.14.0
 humanfriendly==10.0
-idna==3.4
+idna==3.7
 importlib-metadata==6.0.0
 loguru==0.6.0
 mpmath==1.2.1
